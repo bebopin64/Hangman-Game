@@ -14,13 +14,14 @@ var lettersClear = document.querySelector('#lettersGuessed');
 var guessed = document.getElementsByClassName('letterHolder');
 var attemptTitle = document.querySelector('.guesses');
 var winNumber = document.querySelector('.wins');
+var lossNumber = document.querySelector('.losses');
 var personGuess = "";
 var beenGuessed = 0;
 var letterCount = 0;
 var wins = 0;
+var losses = 0;
 var uhoh = new Audio("assets/sounds/uhoh.mp3");
 var woosh = new Audio("assets/sounds/woosh.mp3");
-var waterDrop = new Audio("assets/sounds/waterDrop.mp3");
 
 // Create Functions ------------------------------------------------------------
 
@@ -32,9 +33,9 @@ function reset() {
 	letterCount = 0;
 	counter = 20;
 	lettersGuessedArr = [];
-	for (j=0;j<randomWord.length;j++) {
+	for (var j=0;j<randomWord.length;j++) {
 		guessed[j].textContent = "_";
-	};
+	}
 	lettersClear.innerHTML = "";
 	attemptTitle.innerHTML = "Guesses left: " + counter;
 	runGame();
@@ -44,16 +45,16 @@ function reset() {
 
 function checkGuess() {
 	// if user out of guesses - resets game
-	for (i=0;i<lettersGuessedArr.length;i++) {
+	for (var i=0;i<lettersGuessedArr.length;i++) {
 		if (personGuess === lettersGuessedArr[i]) {
 			beenGuessed = 1;
-		};
-	};
+		}
+	}
 	if (beenGuessed === 1) {
 		beenGuessed = 0;
 		runGame();
 	} else {
-		for (j=0;j<randomWord.length;j++) {
+		for (var j=0;j<randomWord.length;j++) {
 			if (personGuess === randomWord[j]) {
 				lettersGuessedArr.push(personGuess);
 				guessed[j].textContent = randomWord[j];
@@ -62,19 +63,21 @@ function checkGuess() {
 					win();
 					return;				
 				}
-			};
-		};	
+			}
+		}
 		if (counter === 1) {
 			uhoh.play();
+			losses++;
+			lossNumber.innerHTML = "Losses: " + losses;
 			reset();
 			return;
-		};
+		}
 		lettersGuessedArr.push(personGuess);
 		lettersGuessed.append(personGuess + " ");
 		counter--;
 		attemptTitle.innerHTML = "Guesses left: " + counter;
 		return;
-	};
+	}
 }
 
 // Records Wins
