@@ -1,86 +1,95 @@
-var createDiv = document.createElement("div");
 
-var words = {
-	spool: ["S","p","o","o","l"],
-	lunch: ["L","u","n","c","h"]
-};
-var objectSize = Object.keys(words);
-var objectSizeReal = objectSize.length;
-var spool = ["S","p","o","o","l"];
-var lunch = ["L","u","n","c","h"];
-var guessed = [];
-var wordsArray = ["spool","lunch"];
-var currentWord = [];
-var wordIndex = 0;
-var chosenWord = 0;
-var userInput = "";
-var guessedIndex = 0;
+// Define Variables ----------------------------------------------------------
 
+var hangmanWords = [
+	"spool","house","words","mends","fives","chive","moose"
+	];
+var randomNumber = Math.floor(Math.random() * 7);
+var randomWord = hangmanWords[randomNumber];
+var counter = 10;
+var lettersGuessedArr = [];
+var lettersGuessedClass = document.getElementById('lettersGuessed');
+var lettersClear = document.querySelector('#lettersGuessed');
+var li = document.getElementsByClassName('tester');
+var attemptTitle = document.querySelector('.attempt-title');
+var winNumber = document.querySelector('.wins');
+var personGuess = "";
+var beenGuessed = 0;
+var letterCount = 0;
+var wins = 0;
 
-document.onkeyup = function getUserInput () {
-	userInput = event.key;
-	compare();
+// Create Functions ------------------------------------------------------------
+
+// Resets the game after win/loss
+
+function reset() {
+	randomNumber = Math.floor(Math.random() * 7);
+	randomWord = hangmanWords[randomNumber];
+	letterCount = 0;
+	counter = 10;
+	lettersGuessedArr = [];
+	for (j=0;j<randomWord.length;j++) {
+		li[j].textContent = "_";
+	};
+	lettersClear.innerHTML = "";
+	attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+	runGame();
 }
 
+// Checks user input for proper handling 
 
-function chooseWord() {
-	wordIndex = Math.floor(Math.random() * objectSizeReal);
-	chosenWord = wordsArray[wordIndex];
-	// push chosenWord into an currentWord array using object
-}
-
-function compare() {
-	guessed.forEach(function(get) {
-		if (userInput == get) {
-			getUserInput();
-		} else {
-			guessed.push(userInput);
-			checkMatch();
-		}
-	});
-}
-
-function checkMatch() {
-
-}
-function playGame() {
-	document.onkeyup = function() {
-		compare();
-		guessed.push(userInput);
-		console.log("3");
-		console.log(guessed);
-	// userInput = event.key;
-	// console.log(userInput);
+function checkGuess() {
+	// if user out of guesses - resets game
+	if (counter === 1) {
+		reset();
+		return;
+	};
+	for (i=0;i<lettersGuessedArr.length;i++) {
+		if (personGuess === lettersGuessedArr[i]) {
+			beenGuessed = 1;
+		};
+	};
+	if (beenGuessed === 1) {
+		beenGuessed = 0;
+		runGame();
+	} else {
+		for (j=0;j<randomWord.length;j++) {
+			if (personGuess === randomWord[j]) {
+				lettersGuessedArr.push(personGuess);
+				li[j].textContent = randomWord[j];
+				letterCount++;
+				if (letterCount === 5) {
+					win();
+					return;				
+				}
+			};
+		};
+		lettersGuessedArr.push(personGuess);
+		lettersGuessedClass.append(personGuess + " ");
+		counter--;
+		attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+		return;
 	};
 }
 
-function compareUserInput (get) {
-	words[currentWord].forEach(function(get) {
-		if (userInput = get) {
+// Records Wins
 
-		}
-	
-	if (userInput === words[currentWord][0]) {
-
-	}
-	});
+function win() {
+	personGuess = "";
+	wins++;
+	winNumber.innerHTML = "Wins: " + wins;
+	reset();
 }
 
-function printCurrentWord() {
-	console.log(currentWord);
-	console.log(words[currentWord][1]);
+// Master function
+
+function runGame() {
+	attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+	console.log(randomWord);
+	document.onkeyup = function() {
+	personGuess = event.key;
+	checkGuess();
+	};
 }
 
-
-
-// // funtion wordLength() {
-// // };
-
-// function createDivs() {
-// 	for (i=0;i<currentWord.length;i++) {
-// 		document.body.appendChild(div);
-// 	}
-// };
-
-chooseWord();
-playGame();
+runGame();
