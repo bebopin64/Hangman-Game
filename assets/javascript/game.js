@@ -2,37 +2,41 @@
 // Define Variables ----------------------------------------------------------
 
 var hangmanWords = [
-	"spool","house","words","mends","fives","chive","moose"
-	];
-var randomNumber = Math.floor(Math.random() * 7);
+	"aardvark","abalones","anteater","antelope","bushbaby","capuchin",
+	"chipmunk","elephant","hedgehog","kangaroo","mandrill","marmoset",
+	"mongoose","platypus","porpoise","reindeer","squirrel"];
+var randomNumber = Math.floor(Math.random() * 17);
 var randomWord = hangmanWords[randomNumber];
-var counter = 10;
+var counter = 20;
 var lettersGuessedArr = [];
 var lettersGuessed = document.getElementById('lettersGuessed');
 var lettersClear = document.querySelector('#lettersGuessed');
-var li = document.getElementsByClassName('letterHolder');
+var guessed = document.getElementsByClassName('letterHolder');
 var attemptTitle = document.querySelector('.guesses');
 var winNumber = document.querySelector('.wins');
 var personGuess = "";
 var beenGuessed = 0;
 var letterCount = 0;
 var wins = 0;
+var uhoh = new Audio("assets/sounds/uhoh.mp3");
+var woosh = new Audio("assets/sounds/woosh.mp3");
+var waterDrop = new Audio("assets/sounds/waterDrop.mp3");
 
 // Create Functions ------------------------------------------------------------
 
 // Resets the game after win/loss
 
 function reset() {
-	randomNumber = Math.floor(Math.random() * 7);
+	randomNumber = Math.floor(Math.random() * 17);
 	randomWord = hangmanWords[randomNumber];
 	letterCount = 0;
-	counter = 10;
+	counter = 20;
 	lettersGuessedArr = [];
 	for (j=0;j<randomWord.length;j++) {
-		li[j].textContent = "_";
+		guessed[j].textContent = "_";
 	};
 	lettersClear.innerHTML = "";
-	attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+	attemptTitle.innerHTML = "Guesses left: " + counter;
 	runGame();
 }
 
@@ -40,10 +44,6 @@ function reset() {
 
 function checkGuess() {
 	// if user out of guesses - resets game
-	if (counter === 1) {
-		reset();
-		return;
-	};
 	for (i=0;i<lettersGuessedArr.length;i++) {
 		if (personGuess === lettersGuessedArr[i]) {
 			beenGuessed = 1;
@@ -56,18 +56,23 @@ function checkGuess() {
 		for (j=0;j<randomWord.length;j++) {
 			if (personGuess === randomWord[j]) {
 				lettersGuessedArr.push(personGuess);
-				li[j].textContent = randomWord[j];
+				guessed[j].textContent = randomWord[j];
 				letterCount++;
-				if (letterCount === 5) {
+				if (letterCount === 8) {
 					win();
 					return;				
 				}
 			};
+		};	
+		if (counter === 1) {
+			uhoh.play();
+			reset();
+			return;
 		};
 		lettersGuessedArr.push(personGuess);
 		lettersGuessed.append(personGuess + " ");
 		counter--;
-		attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+		attemptTitle.innerHTML = "Guesses left: " + counter;
 		return;
 	};
 }
@@ -75,6 +80,7 @@ function checkGuess() {
 // Records Wins
 
 function win() {
+	woosh.play();
 	personGuess = "";
 	wins++;
 	winNumber.innerHTML = "Wins: " + wins;
@@ -84,12 +90,14 @@ function win() {
 // Master function
 
 function runGame() {
-	attemptTitle.innerHTML = "You have this many attempts left: " + counter;
+	attemptTitle.innerHTML = "Guesses left: " + counter;
 	console.log(randomWord);
 	document.onkeyup = function() {
-	personGuess = event.key;
-	checkGuess();
+		personGuess = event.key;
+		checkGuess();
 	};
 }
+
+// Run the game
 
 runGame();
